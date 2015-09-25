@@ -8,10 +8,12 @@
 #include <cstdlib>
 #include <iostream>
 
-using namespace std;
+#include "math_lib.h"
 
 int main() {
-	cout << "Testando o projeto inicialmente." << endl;
+	std::cout << "Testando o projeto inicialmente." << std::endl;
+  math::Matrix A(3, 3);
+
 	system("pause");
 
 	return 0;

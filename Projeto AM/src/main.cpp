@@ -12,9 +12,37 @@
 
 int main() {
 	std::cout << "Testando o projeto inicialmente." << std::endl;
-  math::Matrix A(3, 3);
+  math::Matrix A(3, 3), B(2, 1);
+  
+  for (int i = 0; i < 3; ++i) {
+    A(i, i) = 1.5;
+  }
+  
+  A = 3*A;
+  std::cout << A.ToString() << std::endl;
+  
+  A = 2*B;
+  std::cout << (A == B) << std::endl;
 
-	system("pause");
+  std::vector<std::vector<double>> input(3);
+  input[0] = std::vector<double>(2, 1);
+  input[1] = std::vector<double>({1.4, 0});
+  input[2] = std::vector<double>({2.5, -2});
 
+  math::Matrix C(input);
+  std::cout << C.ToString() << std::endl;
+
+  try {
+    input[1] = std::vector<double>(0, 10);
+    math::Matrix D(input);
+    std::cout << D.ToString() << std::endl;
+  } catch (math::BadDimensionException& e) {
+    std::cout << e.what() << std::endl;
+  }
+  catch (math::MatrixDimensionMismatchException& e) {
+    std::cout << e.what() << std::endl;
+  }  
+	
+  system("pause");
 	return 0;
 }

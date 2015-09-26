@@ -26,3 +26,15 @@
 *.exe
 *.out
 *.app
+
+# -- Project --
+*.suo
+*.sdf
+*.opensdf
+*.obj
+*.pdb
+
+bin/
+"Projeto AM/intermediate/"
+"Projeto AM/*.vcxproj"
+"Projeto AM/*.filters"

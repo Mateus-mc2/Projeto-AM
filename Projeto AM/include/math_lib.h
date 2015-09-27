@@ -34,52 +34,45 @@ public:
 
 class Matrix {
 private:
-	int rows_;
-	int cols_;
-  
+	uint32_t rows_;
+	uint32_t cols_;  
 	double** data_;
+
+  void CopyFrom(const Matrix &M);
+  Matrix add(const Matrix &A, const Matrix &B);
+  Matrix multiply(const Matrix &A, const Matrix &B);
 public:
   explicit Matrix(const std::vector<std::vector<double>> &matrix);
+  // Copy constructor.
+  Matrix(const Matrix &M);
   // Creates a null matrix.
-  Matrix(const int &m, const int &n);
+  Matrix(const uint32_t &m, const uint32_t &n);
   ~Matrix();
 
-  bool operator==(const Matrix& M) const;
-  Matrix& operator=(const Matrix& M);
-  Matrix& operator+=(const Matrix& M);
-  Matrix& operator*=(const Matrix& M);
+  bool operator==(const Matrix &M) const;
+  Matrix& operator=(const Matrix &M);
+  Matrix& operator+=(const Matrix &M);
+  Matrix& operator-=(const Matrix &M);
+  Matrix& operator*=(const Matrix &M);
+  Matrix operator+(const Matrix &M);
+  Matrix operator*(const Matrix &M);
+  Matrix operator-(const Matrix &M);
+  Matrix operator-() const;
 
   inline double& operator()(const uint32_t &i, const uint32_t &j) const {
     return this->data_[i][j];
   }
 
-  inline Matrix& operator+(const Matrix& B) {
-    *this += B;
-    return *this;
-  }
-
-  inline friend Matrix& operator*(const double& k, Matrix& M) {
-    for (int i = 0; i < M.rows_; ++i) {
-      for (int j = 0; j < M.cols_; ++j) {
-        M(i, j) *= k;
-      }
-    }
-
-    return M;
-  }
-
-  inline Matrix& operator*(const Matrix& M) {
-    *this *= M;
-    return *this;
-  }
-
   double& At(const uint32_t &i, const uint32_t &j);
-  std::string ToString();
+  std::string ToString() const;
 
-  inline int rows() const { return this->rows_; }
-  inline int cols() const { return this->cols_; }
+  inline uint32_t rows() const { return this->rows_; }
+  inline uint32_t cols() const { return this->cols_; }
   inline double** data() const { return this->data_; }
 };
+
+Matrix operator*(const double &k, const Matrix &M);
+Matrix operator*(const Matrix &M, const double &k);
 
 }  // namespace math_lib
 

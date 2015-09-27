@@ -32,14 +32,23 @@ int main() {
   math::Matrix C(input);
   std::cout << C.ToString() << std::endl;
 
+  B = 2*C;
+
+  try {
+    A = B + 0.5*C;
+    std::cout << A.ToString() << std::endl;
+    std::cout << B.ToString() << std::endl;
+  } catch (math::MatrixDimensionMismatchException& e) {
+    std::cout << e.what() << std::endl;
+  }
+  
   try {
     input[1] = std::vector<double>(0, 10);
     math::Matrix D(input);
     std::cout << D.ToString() << std::endl;
   } catch (math::BadDimensionException& e) {
     std::cout << e.what() << std::endl;
-  }
-  catch (math::MatrixDimensionMismatchException& e) {
+  } catch (math::MatrixDimensionMismatchException& e) {
     std::cout << e.what() << std::endl;
   }  
 	

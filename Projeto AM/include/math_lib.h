@@ -34,9 +34,10 @@ public:
 
 class Matrix {
 private:
-	uint32_t rows_;
-	uint32_t cols_;  
-	double** data_;
+  const int kDefaultSize = 10;
+  uint32_t rows_;
+  uint32_t cols_;
+  double** data_;
 
   void CopyFrom(const Matrix &M);
   Matrix add(const Matrix &A, const Matrix &B);
@@ -47,6 +48,8 @@ public:
   Matrix(const Matrix &M);
   // Creates a null matrix.
   Matrix(const uint32_t &m, const uint32_t &n);
+  // Creates a square null matrix of order n = kDefaultSize.
+  Matrix();
   ~Matrix();
 
   bool operator==(const Matrix &M) const;

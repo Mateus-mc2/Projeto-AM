@@ -50,12 +50,24 @@ Matrix::Matrix(const uint32_t &m, const uint32_t &n) : rows_(m), cols_(n) {
     throw BadDimensionException("Matrix dimensions must be positive.");
   }
 
-  this->data_ = new double*[m];
-  
-  for (int i = 0; i < m; ++i) {
-    this->data_[i] = new double[n];
+  this->data_ = new double*[this->rows_];
 
-    for (int j = 0; j < n; ++j) {
+  for (int i = 0; i < this->rows_; ++i) {
+    this->data_[i] = new double[this->cols_];
+
+    for (int j = 0; j < this->cols_; ++j) {
+      this->data_[i][j] = 0;
+    }
+  }
+}
+
+Matrix::Matrix() : rows_(this->kDefaultSize), cols_(this->kDefaultSize) {
+  this->data_ = new double*[this->rows_];
+
+  for (int i = 0; i < this->rows_; ++i) {
+    this->data_[i] = new double[this->cols_];
+
+    for (int j = 0; j < this->cols_; ++j) {
       this->data_[i][j] = 0;
     }
   }
@@ -104,7 +116,7 @@ Matrix Matrix::add(const Matrix &A, const Matrix &B) {
   Matrix result(A.rows(), A.cols());
 
   for (int i = 0; i < A.rows(); ++i) {
-    for (int j = 0; j < B.rows(); ++j) {
+    for (int j = 0; j < A.cols(); ++j) {
       result(i, j) = A(i, j) + B(i, j);
     }
   }
@@ -122,7 +134,7 @@ Matrix Matrix::multiply(const Matrix &A, const Matrix &B) {
   for (int i = 0; i < C.rows(); ++i) {
     for (int j = 0; j < C.cols(); ++j) {
       for (int k = 0; k < A.cols(); ++k) {
-        C(i, j) = A(i, k) + B(k, j);
+        C(i, j) += A(i, k)*B(k, j);
       }
     }
   }

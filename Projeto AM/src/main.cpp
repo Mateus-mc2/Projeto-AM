@@ -24,12 +24,12 @@ int main() {
   A = 2*B;
   std::cout << (A == B) << std::endl;
 
-  std::vector<std::vector<double>> input(3);
-  input[0] = std::vector<double>(2, 1);
-  input[1] = std::vector<double>({1.4, 0});
-  input[2] = std::vector<double>({2.5, -2});
+  std::vector<std::vector<double>> input1(3);
+  input1[0] = std::vector<double>(2, 1);
+  input1[1] = std::vector<double>({1.4, 0});
+  input1[2] = std::vector<double>({2.5, -2});
 
-  math::Matrix C(input);
+  math::Matrix C(input1);
   std::cout << C.ToString() << std::endl;
 
   B = 2*C;
@@ -43,14 +43,40 @@ int main() {
   }
   
   try {
-    input[1] = std::vector<double>(0, 10);
-    math::Matrix D(input);
+    input1[1] = std::vector<double>(0, 10);
+    math::Matrix D(input1);
     std::cout << D.ToString() << std::endl;
   } catch (math::BadDimensionException& e) {
     std::cout << e.what() << std::endl;
   } catch (math::MatrixDimensionMismatchException& e) {
     std::cout << e.what() << std::endl;
-  }  
+  }
+
+  std::vector<std::vector<double>> input2(2);
+  input2[0] = std::vector<double>({1, 0, -1, 0, 1, -1});
+  input2[1] = std::vector<double>({2, 1, 1, -1, 0, 1});
+
+  std::vector<std::vector<double>> input3(6);
+  input3[0] = std::vector<double>(1, 1);
+  input3[1] = std::vector<double>(1, 0);
+  input3[2] = std::vector<double>(1, -2);
+  input3[3] = std::vector<double>(1, 1);
+  input3[4] = std::vector<double>(1, 3);
+  input3[5] = std::vector<double>(1, 2);
+
+  try {
+    A = math::Matrix(input2);
+    math::Matrix x(input3);
+    math::Matrix b;
+
+    b = A*x;
+    std::cout << b.ToString() << std::endl;  // b = (4, 1)^T
+
+    b = x*A;  // Exception.
+    std::cout << b.ToString() << std::endl;
+  } catch (math::MatrixDimensionMismatchException& e) {
+    std::cout << e.what() << std::endl;
+  }
 	
   system("pause");
 	return 0;

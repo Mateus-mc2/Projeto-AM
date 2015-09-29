@@ -61,18 +61,6 @@ Matrix::Matrix(const uint32_t &m, const uint32_t &n) : rows_(m), cols_(n) {
   }
 }
 
-Matrix::Matrix() : rows_(this->kDefaultSize), cols_(this->kDefaultSize) {
-  this->data_ = new double*[this->rows_];
-
-  for (int i = 0; i < this->rows_; ++i) {
-    this->data_[i] = new double[this->cols_];
-
-    for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] = 0;
-    }
-  }
-}
-
 Matrix::~Matrix() {
   for (int i = 0; i < this->rows_; ++i) {
     delete[] this->data_[i];
@@ -106,7 +94,7 @@ void Matrix::CopyFrom(const Matrix &M) {
   }
 }
 
-Matrix Matrix::add(const Matrix &A, const Matrix &B) {
+Matrix Matrix::Add(const Matrix &A, const Matrix &B) {
   if (A.rows() != B.rows() || A.cols() != B.cols()) {
     throw MatrixDimensionMismatchException(
       "Matrices dimensions do not agree in addition operator."
@@ -124,7 +112,7 @@ Matrix Matrix::add(const Matrix &A, const Matrix &B) {
   return result;
 }
 
-Matrix Matrix::multiply(const Matrix &A, const Matrix &B) {
+Matrix Matrix::Multiply(const Matrix &A, const Matrix &B) {
   if (A.cols() != B.rows()) {
     throw MatrixDimensionMismatchException("Matrices dimensions do not agree in multiplication.");
   }
@@ -140,6 +128,20 @@ Matrix Matrix::multiply(const Matrix &A, const Matrix &B) {
   }
 
   return C;
+}
+
+void Matrix::SwapRows(const uint32_t i, const uint32_t j) {
+  double* aux = this->data_[i];
+  this->data_[i] = this->data_[j];
+  this->data_[j] = aux;
+}
+
+void Matrix::ApplyForwardElimination(Matrix *U) {
+  // TODO(Mateus): implementar.
+}
+
+void Matrix::ApplyBackSubstitution(Matrix *R) {
+  // TODO(Mateus): implementar.
 }
 
 bool Matrix::operator==(const Matrix &M) const {
@@ -209,17 +211,17 @@ Matrix& Matrix::operator*=(const Matrix &M) {
 
 Matrix Matrix::operator+(const Matrix &M) {
   Matrix copy(*this);
-  return this->add(copy, M);
+  return this->Add(copy, M);
 }
 
 Matrix Matrix::operator*(const Matrix &M) {
   Matrix copy(*this);
-  return this->multiply(copy, M);
+  return this->Multiply(copy, M);
 }
 
 Matrix Matrix::operator-(const Matrix &M) {
   Matrix copy(*this);
-  return this->add(copy, -M);
+  return this->Add(copy, -M);
 }
 
 Matrix Matrix::operator-() const {
@@ -240,6 +242,15 @@ double& Matrix::At(const uint32_t &i, const uint32_t &j) {
   }
 
   return this->data_[i][j];
+}
+
+Matrix Matrix::ApplyGaussianElimination() {
+  Matrix result(*this);
+
+  this->ApplyForwardElimination(&result);
+  this->ApplyBackSubstitution(&result);
+
+  return result;
 }
 
 std::string Matrix::ToString() const {
@@ -274,6 +285,24 @@ Matrix operator*(const double &k, const Matrix &M) {
 
 Matrix operator*(const Matrix &M, const double &k) {
   return k*M;
+}
+
+SquareMatrix::SquareMatrix(const std::vector<std::vector<double>> &matrix) : Matrix(matrix) {
+  if (matrix.size() != matrix[0].size()) {
+    throw MatrixDimensionMismatchException("Input matrix must be a square matrix.");
+  }
+}
+
+double SquareMatrix::GetDeterminant() {
+  Matrix U(*this);
+  this->ApplyForwardElimination(&U);
+  double det = 1.0;
+
+  for (int i = 0; i < U.rows(); ++i) {
+    det *= U(i, i);
+  }
+
+  return det;
 }
 
 }  // namespace math_lib

@@ -21,9 +21,15 @@
     <ClCompile Include="src\math_lib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ReadingFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\math_lib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ReadingFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

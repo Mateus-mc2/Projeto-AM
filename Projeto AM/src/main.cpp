@@ -7,10 +7,12 @@
 
 #include <cstdlib>
 #include <iostream>
+#include "ReadingFile.h"
 
 using namespace std;
 
 int main() {
+	matrixDissimilarity(matrixExamples(), 10);
 	cout << "Testando o projeto inicialmente." << endl;
 	system("pause");
 

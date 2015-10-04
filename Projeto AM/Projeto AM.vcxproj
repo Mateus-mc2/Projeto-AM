@@ -73,6 +73,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Ana\Documents\GitHub\ProjetoRealLife\Projeto-AM\Projeto AM;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -103,11 +104,13 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ReadingFile.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\math_lib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\math_lib.h" />
+    <ClInclude Include="ReadingFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

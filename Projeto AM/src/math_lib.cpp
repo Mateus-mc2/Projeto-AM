@@ -10,7 +10,7 @@ const char* MathException::what() const {
 }
 
 Matrix::Matrix(const std::vector<std::vector<double>> &matrix) : precision_(this->GetPrecision()) {
-  if (matrix.empty()) {
+  if (matrix.empty() || matrix[0].empty()) {
     throw BadDimensionException("Empty matrix.");
   }
 
@@ -156,7 +156,6 @@ void Matrix::SwapRows(const uint32_t i, const uint32_t j) {
   this->data_[j] = aux;
 }
 
-// TODO(Mateus): adicionar EPS.
 void Matrix::ApplyForwardElimination(Matrix *U, int *num_permutations) {
   int last_pivot_col = 0;
   int min = (U->rows() <= U->cols()) ? U->rows() : U->cols();

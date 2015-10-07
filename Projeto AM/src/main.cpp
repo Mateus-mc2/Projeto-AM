@@ -87,6 +87,8 @@ int main() {
     std::cout << (M.ApplyGaussianElimination()).ToString() << std::endl;
   } catch (math::MatrixDimensionMismatchException& e) {
     std::cout << e.what() << std::endl;
+  } catch (math::BadDimensionException& e) {
+    std::cout << e.what() << std::endl;
   }
 	
   system("pause");

@@ -3,11 +3,13 @@
 
 #include <cmath>
 #include <cstdint>
-#include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 namespace math {
+
+const static double kEps = 1.0e-08;
 
 class MathException : public std::exception {
 private:
@@ -38,8 +40,10 @@ private:
   const uint32_t kDefaultSize = 10;
   uint32_t rows_;
   uint32_t cols_;
+  int precision_;
   double** data_;
 
+  int GetPrecision();
   void CopyFrom(const Matrix &M);
   Matrix Add(const Matrix &A, const Matrix &B);
   Matrix Multiply(const Matrix &A, const Matrix &B);

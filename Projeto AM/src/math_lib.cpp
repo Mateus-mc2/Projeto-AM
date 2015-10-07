@@ -1,5 +1,7 @@
-#include "math_lib.h"
+#include <iostream>
 #include <cassert>
+
+#include "math_lib.h"
 
 namespace math {
 
@@ -7,7 +9,7 @@ const char* MathException::what() const {
   return this->kErrorMsg.c_str();
 }
 
-Matrix::Matrix(const std::vector<std::vector<double>> &matrix){
+Matrix::Matrix(const std::vector<std::vector<double>> &matrix) : precision_(this->GetPrecision()) {
   if (matrix.empty()) {
     throw BadDimensionException("Empty matrix.");
   }
@@ -28,13 +30,18 @@ Matrix::Matrix(const std::vector<std::vector<double>> &matrix){
     this->data_[i] = new double[this->cols_];
 
     for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] = matrix[i][j];
+      if (fabs(matrix[i][j]) < kEps) {
+        this->data_[i][j] = 0.0;
+      }
+      else {
+        this->data_[i][j] = matrix[i][j];
+      }
     }
     
   }
 }
 
-Matrix::Matrix(const Matrix &M) : rows_(M.rows()), cols_(M.cols()) {
+Matrix::Matrix(const Matrix &M) : rows_(M.rows()), cols_(M.cols()), precision_(this->GetPrecision()) {
   this->data_ = new double*[this->rows_];
 
   for (int i = 0; i < this->rows_; ++i) {
@@ -46,7 +53,7 @@ Matrix::Matrix(const Matrix &M) : rows_(M.rows()), cols_(M.cols()) {
   }
 }
 
-Matrix::Matrix(const uint32_t &m, const uint32_t &n) : rows_(m), cols_(n) {
+Matrix::Matrix(const uint32_t &m, const uint32_t &n) : rows_(m), cols_(n), precision_(this->GetPrecision()) {
   if (m == 0 || n == 0){
     throw BadDimensionException("Matrix dimensions must be positive.");
   }
@@ -68,6 +75,18 @@ Matrix::~Matrix() {
   }
 
   delete[] this->data_;
+}
+
+int Matrix::GetPrecision() {
+  double eps = kEps;
+  int precision = 0;
+
+  while (eps != 1.0) {
+    ++precision;
+    eps *= 10;
+  }
+
+  return precision;
 }
 
 void Matrix::CopyFrom(const Matrix &M) {
@@ -141,14 +160,15 @@ void Matrix::SwapRows(const uint32_t i, const uint32_t j) {
 void Matrix::ApplyForwardElimination(Matrix *U, int *num_permutations) {
   int last_pivot_col = 0;
   int min = (U->rows() <= U->cols()) ? U->rows() : U->cols();
+  bool precision_flag = false;
 
   for (int i = 0; i < min; ++i) {
     bool found_next_pivot = false;
 
     for (int j = last_pivot_col; j < U->cols() && !found_next_pivot; ++j) {
-      if ((*U)(i, j) == 0.0) {
+      if (!(*U)(i, j)) {
         for (int k = i + 1; k < U->rows() && !found_next_pivot; ++k) {
-          if ((*U)(k, j) != 0) {
+          if ((*U)(k, j)) {
             U->SwapRows(i, k);
             last_pivot_col = j;
             found_next_pivot = true;
@@ -169,17 +189,56 @@ void Matrix::ApplyForwardElimination(Matrix *U, int *num_permutations) {
         double scalar_factor = (*U)(k, last_pivot_col) / (*U)(i, last_pivot_col);
 
         for (int j = last_pivot_col; j < U->cols(); ++j) {
-          (*U)(k, j) -= scalar_factor*(*U)(i, j);
+          int abs = ((*U)(k, j) - scalar_factor*(*U)(i, j) >= 0.0) ?
+                    (*U)(k, j) - scalar_factor*(*U)(i, j) :
+                    -(*U)(k, j) + scalar_factor*(*U)(i, j);
+
+          if (abs > 0.0 && abs < kEps) {
+            (*U)(k, j) = 0.0;
+            precision_flag = true;
+          } else {
+            (*U)(k, j) -= scalar_factor*(*U)(i, j);
+          }
         }
       }
     } else {
       break;
     }
   }
+
+  if (precision_flag) {
+    std::cout << "  *** WARNING *** " << std::endl << "Aqui vai o aviso pros desavisados: escalonamento impreciso, hohoho. :D" << std::endl;
+  }
 }
 
 void Matrix::ApplyBackSubstitution(Matrix *R) {
-  // TODO(Mateus): implementar.
+  int last_pivot_col = R->cols();
+
+  for (int i = R->rows() - 1; i >= 0; --i) {
+    // Find next pivot.
+    bool found = false;
+
+    for (int j = 0; j < last_pivot_col; ++j) {
+      if ((*R)(i, j)) {
+        last_pivot_col = j;
+        found = true;
+      }
+    }
+
+    if (found) {
+      // Set all elements from the pivot's column to zero (in fact, if i is the pivot's line, 
+      // it is enough to set all elements (*R)(k, j), k < i, to zero, since R is already at row
+      // echelon form).
+      for (int k = i - 1; k >= 0; --k) {
+        // To perform it by subtracting rows, just do
+        // (Line k) <- (Line k) - ((*R)(k, last_pivot_col)/(*R)(i, last_pivot_col)*(Line i),
+        // thus (*R)(k, last_pivot_col) <- (*R)(k, last_pivot_col) -
+        // - ((*R)(k, last_pivot_col)/(*R)(i, last_pivot_col)) - (*R)(i, last_pivot_col) =
+        // = (*R)(k, last_pivot_col) - (*R)(k, last_pivot_col) = 0. The result must be the same.
+        (*R)(k, last_pivot_col) = 0.0;
+      }
+    }
+  }
 }
 
 bool Matrix::operator==(const Matrix &M) const {
@@ -293,11 +352,16 @@ Matrix Matrix::ApplyGaussianElimination() {
 }
 
 std::string Matrix::ToString() const {
+  std::ostringstream out;
+  out.precision(this->precision_);
   std::string result = "[";
 
   for (int i = 0; i < this->rows_; ++i) {
     for (int j = 0; j < this->cols_; ++j) {
-      result += std::to_string(this->data_[i][j]) + ", ";
+      out << this->data_[i][j];
+      result += out.str() + ", ";
+      out.str("");
+      out.clear();
     }
 
     result.erase(result.size() - 2);

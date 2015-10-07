@@ -4,6 +4,7 @@
 #include "math_lib.h"
 
 int main() {
+  std::cout.precision(8);
 	std::cout << "Testando o projeto inicialmente." << std::endl;
   math::Matrix A(3, 3), B(2, 1);
   
@@ -19,7 +20,7 @@ int main() {
 
   std::vector<std::vector<double>> input1(3);
   input1[0] = std::vector<double>(2, 1);
-  input1[1] = std::vector<double>({1.4, 0});
+  input1[1] = std::vector<double>({1.4, 0.000000001});
   input1[2] = std::vector<double>({2.5, -2});
 
   math::Matrix C(input1);
@@ -62,6 +63,8 @@ int main() {
     math::Matrix x(input3);
     math::Matrix b;
 
+    std::cout << (A.ApplyGaussianElimination()).ToString() << std::endl;
+
     b = A*x;
     std::cout << b.ToString() << std::endl;  // b = (4, 1)^T
 
@@ -81,6 +84,7 @@ int main() {
 
     std::cout << M.ToString() << std::endl;
     std::cout << "  Determinante: " << M.GetDeterminant() << std::endl;  // Should be 0.
+    std::cout << (M.ApplyGaussianElimination()).ToString() << std::endl;
   } catch (math::MatrixDimensionMismatchException& e) {
     std::cout << e.what() << std::endl;
   }

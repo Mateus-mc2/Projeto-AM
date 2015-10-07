@@ -1,4 +1,5 @@
 #include "math_lib.h"
+#include <cassert>
 
 namespace math {
 
@@ -136,8 +137,45 @@ void Matrix::SwapRows(const uint32_t i, const uint32_t j) {
   this->data_[j] = aux;
 }
 
-void Matrix::ApplyForwardElimination(Matrix *U) {
-  // TODO(Mateus): implementar.
+// TODO(Mateus): adicionar EPS.
+void Matrix::ApplyForwardElimination(Matrix *U, int *num_permutations) {
+  int last_pivot_col = 0;
+  int min = (U->rows() <= U->cols()) ? U->rows() : U->cols();
+
+  for (int i = 0; i < min; ++i) {
+    bool found_next_pivot = false;
+
+    for (int j = last_pivot_col; j < U->cols() && !found_next_pivot; ++j) {
+      if ((*U)(i, j) == 0.0) {
+        for (int k = i + 1; k < U->rows() && !found_next_pivot; ++k) {
+          if ((*U)(k, j) != 0) {
+            U->SwapRows(i, k);
+            last_pivot_col = j;
+            found_next_pivot = true;
+            ++(*num_permutations);
+          }
+        }
+      } else {
+        last_pivot_col = j;
+        found_next_pivot = true;
+      }
+    }
+
+    if (found_next_pivot) {
+      // It also says that (*U)(i, last_pivot_col) != 0.
+      assert((*U)(i, last_pivot_col));
+
+      for (int k = i + 1; k < U->rows(); ++k) {
+        double scalar_factor = (*U)(k, last_pivot_col) / (*U)(i, last_pivot_col);
+
+        for (int j = last_pivot_col; j < U->cols(); ++j) {
+          (*U)(k, j) -= scalar_factor*(*U)(i, j);
+        }
+      }
+    } else {
+      break;
+    }
+  }
 }
 
 void Matrix::ApplyBackSubstitution(Matrix *R) {
@@ -246,8 +284,9 @@ double& Matrix::At(const uint32_t &i, const uint32_t &j) {
 
 Matrix Matrix::ApplyGaussianElimination() {
   Matrix result(*this);
+  int num_permutations = 0;  // Not needed here.
 
-  this->ApplyForwardElimination(&result);
+  this->ApplyForwardElimination(&result, &num_permutations);
   this->ApplyBackSubstitution(&result);
 
   return result;
@@ -295,14 +334,15 @@ SquareMatrix::SquareMatrix(const std::vector<std::vector<double>> &matrix) : Mat
 
 double SquareMatrix::GetDeterminant() {
   Matrix U(*this);
-  this->ApplyForwardElimination(&U);
-  double det = 1.0;
+  int num_permutations = 0;
+  this->ApplyForwardElimination(&U, &num_permutations);
+  double diag_product = 1.0;
 
   for (int i = 0; i < U.rows(); ++i) {
-    det *= U(i, i);
+    diag_product *= U(i, i);
   }
 
-  return det;
+  return pow(-1, num_permutations)*diag_product;
 }
 
 }  // namespace math_lib

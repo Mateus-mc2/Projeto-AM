@@ -45,8 +45,9 @@ private:
   Matrix Multiply(const Matrix &A, const Matrix &B);
   void SwapRows(const uint32_t i, const uint32_t j);
 protected:
-  // Finds the row echelon form (an upper-triangular matrix U) of this matrix.
-  void ApplyForwardElimination(Matrix *U);
+  // Finds the row echelon form U of this matrix (the number of permutations is for PA = LU
+  // decomposition).
+  void ApplyForwardElimination(Matrix *U, int *num_permutations);
   // Finds the reduced echelon form of this matrix (it must receive the row echelon form matrix U -
   // see ApplyForwardElimination).
   void ApplyBackSubstitution(Matrix *R);
@@ -106,7 +107,6 @@ public:
 };
 
 class SquareMatrix : public Matrix {
-private:
 public:
   explicit SquareMatrix(const std::vector<std::vector<double>> &matrix);
   // Copy constructor.

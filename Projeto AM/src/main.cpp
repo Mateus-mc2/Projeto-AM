@@ -70,6 +70,20 @@ int main() {
   } catch (math::MatrixDimensionMismatchException& e) {
     std::cout << e.what() << std::endl;
   }
+
+  std::vector<std::vector<double>> input4(3);
+  input4[0] = std::vector<double>({0.0, -1.0, 3.0});
+  input4[1] = std::vector<double>({2.0, 1.0, 1.0});
+  input4[2] = std::vector<double>({1.0, 0.0, 2.0});
+
+  try {
+    math::SquareMatrix M(input4);
+
+    std::cout << M.ToString() << std::endl;
+    std::cout << "  Determinante: " << M.GetDeterminant() << std::endl;  // Should be 0.
+  } catch (math::MatrixDimensionMismatchException& e) {
+    std::cout << e.what() << std::endl;
+  }
 	
   system("pause");
 	return 0;

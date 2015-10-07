@@ -5,7 +5,7 @@
 
 int main() {
   std::cout.precision(8);
-	std::cout << "Testando o projeto inicialmente." << std::endl;
+  std::cout << "Testando o projeto inicialmente." << std::endl;
   math::Matrix A(3, 3), B(2, 1);
   
   for (int i = 0; i < 3; ++i) {

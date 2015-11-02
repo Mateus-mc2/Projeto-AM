@@ -1,11 +1,8 @@
 #include <cstdlib>
 #include <iostream>
-#include "ReadingFile.h"
-
 #include "math_lib.h"
 
 int main() {
-	matrixDissimilarity(matrixExamples(), 10);	
 
   std::cout.precision(8);
   std::cout << "Testando o projeto inicialmente." << std::endl;

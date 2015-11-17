@@ -111,13 +111,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ReadingFile.cpp" />
+    <ClCompile Include="src\fuzzy_algorithm.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\math_lib.cpp" />
+    <ClCompile Include="src\ReadingFile.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\fuzzy_algorithm.h" />
     <ClInclude Include="include\math_lib.h" />
-    <ClInclude Include="ReadingFile.h" />
+    <ClInclude Include="include\ReadingFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

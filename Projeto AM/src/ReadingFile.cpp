@@ -1,9 +1,8 @@
 #include "ReadingFile.h"
 
-using namespace std;
 
 //x,x,x,x,o,o,x,o,o,positive to [1,1,1,1,0,0,1,0,0]
-int* lineToVector(string line){
+int* lineToVector(std::string line){
 	int count = 0;
 	int vectorReturn[9];
 
@@ -25,15 +24,15 @@ int* lineToVector(string line){
 //return matrix [num. lines][9]
 int** matrixExamples()
 {
-	string strInput;
+	std::string strInput;
 	int** matrizPrinc = new int*[9];
 	int line = 0;
 
-	ifstream inf("TestFile.txt");
+	std::ifstream inf("TestFile.txt");
 
 	if (!inf)
 	{
-		cout << "//could not be opened for reading!\\" << endl;
+		std::cout << "//could not be opened for reading!\\" << std::endl;
 		exit(1);
 	}
 
@@ -43,9 +42,9 @@ int** matrixExamples()
 		for (int j = 0; j < 9; j++)
 		{
 			matrizPrinc[line][j] = lineToVector(strInput)[j];
-			//cout << matrizPrinc[line][j] ;
+			//std::cout << matrizPrinc[line][j] ;
 		}
-		//cout << "--------------------------" << endl;
+		//std::cout << "--------------------------" << endl;
 		line++;
 	}
 
@@ -75,9 +74,9 @@ int** matrixDissimilarity(int** m1, int totalLines){
 					result[auxLine][i] += 1;
 				}
 			}
-			cout << " " << result[auxLine][i];
+			std::cout << " " << result[auxLine][i];
 		}
-		cout << endl;
+		std::cout << std::endl;
 		auxLine++;
 	}
 

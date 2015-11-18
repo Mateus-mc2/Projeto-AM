@@ -1,7 +1,7 @@
 #include "ReadingFile.h"
 
 //x,x,x,x,o,o,x,o,o,positive to [1,1,1,1,0,0,1,0,0]
-std::vector<double> lineToVectorA(string line) {
+std::vector<double> lineToVectorA(const std::string &line) {
 	int count = 0;
 	std::vector<double> returnVector(9);
 
@@ -21,7 +21,7 @@ std::vector<double> lineToVectorA(string line) {
 }
 
 //return matrix [num. lines][9]
-math::Matrix  matrixExamplesA(int totalExamples) {
+math::Matrix  matrixExamplesA(const int &totalExamples) {
 	std::string strInput;
 	int line = 0;
 	std::vector<std::vector<double>> matrixPrinc(totalExamples);
@@ -42,7 +42,7 @@ math::Matrix  matrixExamplesA(int totalExamples) {
 	return C;
 }
 
-math::Matrix  matrixDissimilarityA(math::Matrix m1, int totalLines){
+math::Matrix  matrixDissimilarityA(const math::Matrix &m1, const int &totalLines){
 	int auxLine = 0;
 	math::Matrix m2 = m1;//auxiliar para comparacao
 	math::Matrix result(totalLines, totalLines);

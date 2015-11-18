@@ -3,7 +3,8 @@
 #include <fstream>
 #include <string>
 #include <cstdlib>
+#include "math_lib.h"
 
-int* lineToVector(std::string line);
-int** matrixExamples();
-int** matrixDissimilarity(int** m1, int totalLines);
+std::vector<double> lineToVectorA(std::string line);
+math::Matrix  matrixExamplesA(int totalExamples);
+math::Matrix  matrixDissimilarityA(math::Matrix m1, int totalLines);

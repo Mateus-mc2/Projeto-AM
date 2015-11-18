@@ -1,8 +1,12 @@
 #include <cstdlib>
 #include <iostream>
 #include "math_lib.h"
+#include "ReadingFile.h"
 
 int main() {
+   std::cout << "-------------------------------------------------------" << std::endl;
+   matrixDissimilarityA(matrixExamplesA(10), 10);
+   std::cout << "-------------------------------------------------------" << std::endl;
 
   std::cout.precision(8);
   std::cout << "Testando o projeto inicialmente." << std::endl;

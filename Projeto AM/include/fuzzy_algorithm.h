@@ -3,6 +3,7 @@
 
 #include <chrono>
 #include <random>
+#include <unordered_set>
 
 #include "math_lib.h"
 #include "ReadingFile.h"
@@ -25,13 +26,14 @@ class FuzzyClustering {
   double GetAdequacyCriterion(const math::Matrix &fuzzy_partition,
     const std::vector<std::vector<int>> &prototypes);
   // Execute procedure to return the prototype which minimizes its respective clustering criterion.
-  std::vector<int> UpdatePrototype(const math::Matrix &fuzzy_partition);
+  std::vector<int> UpdatePrototype(const math::Matrix &fuzzy_partition, const int &index);
 
   public:
-    // TODO(Mateus): criar construtor com os métodos para a leitura da base de dados.
+    FuzzyClustering() : delta_(reader::matrixDissimilarity(reader::matrixExamples())) {}
     explicit FuzzyClustering(math::SquareMatrix delta) : delta_(delta) {}
     ~FuzzyClustering() {}
 
+    // Returns the matrix U which corresponds to the fuzzy partition of this data set. 
     math::Matrix ExecuteClusteringAlgorithm();
 };
 

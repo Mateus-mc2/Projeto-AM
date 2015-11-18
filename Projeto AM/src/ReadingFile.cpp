@@ -1,5 +1,7 @@
 #include "ReadingFile.h"
 
+namespace reader {
+
 //x,x,x,x,o,o,x,o,o,positive to [1,1,1,1,0,0,1,0,0]
 std::vector<double> lineToVector(const std::string &line) {
 	int count = 0;
@@ -26,11 +28,10 @@ math::Matrix  matrixExamples() {
 	int line = 0;
 	std::vector<std::vector<double>> matrixPrinc;
 
-	std::ifstream inf("C:/Users/Suporte/Documents/Visual Studio 2013/Projects/Projeto AM/bin/TestFile.txt");
+	std::ifstream inf("../../TestFile.txt");
 
 	if (!inf) {
 		std::cout << "//could not be opened for reading!\\" << std::endl;
-    system("pause");
 		exit(1);
 	}
 
@@ -65,3 +66,5 @@ math::SquareMatrix matrixDissimilarity(const math::Matrix &m1){
 
 	return result;
 }
+
+}  // namespace reader

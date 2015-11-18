@@ -5,7 +5,7 @@
 
 int main() {
   std::cout << "-------------------------------------------------------" << std::endl;
-  matrixDissimilarity(matrixExamples());
+  reader::matrixDissimilarity(reader::matrixExamples());
   std::cout << "-------------------------------------------------------" << std::endl;
 
   std::cout.precision(8);
@@ -94,7 +94,7 @@ int main() {
   } catch (math::BadDimensionException& e) {
     std::cout << e.what() << std::endl;
   }
-	
+
   system("pause");
 
 	return 0;

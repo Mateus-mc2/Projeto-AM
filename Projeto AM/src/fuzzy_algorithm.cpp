@@ -70,4 +70,39 @@ double FuzzyClustering::GetAdequacyCriterion(const math::Matrix &fuzzy_partition
   return criterion;
 }
 
+std::vector<int> FuzzyClustering::UpdatePrototype(const math::Matrix &fuzzy_partition,
+                                                  const int &index) {
+  std::vector<int> new_prototype;
+  std::unordered_set<int> prototype_set;  // To keep track of elements inserted at constant time.
+
+  for (int j = 0; j < this->q; ++j) {
+    int arg_min = 0;
+    double min = 0.0;
+
+    for (int h = 0; h < this->delta_.rows(); ++h) {
+      if (prototype_set.find(h) == prototype_set.end()) {
+        double sum = 0.0;
+
+        for (int i = 0; i < this->delta_.rows(); ++i) {
+          sum += pow(fuzzy_partition(i, index), this->m)*this->delta_(i, h);
+        }
+        
+        if (h == 0 || min > sum) {
+          min = sum;
+          arg_min = h;
+        }
+      }      
+    }
+
+    new_prototype.push_back(arg_min);
+    prototype_set.insert(arg_min);
+  }
+
+  return new_prototype;
+}
+
+//math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
+//
+//}
+
 }  // namespace project

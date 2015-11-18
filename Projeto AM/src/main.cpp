@@ -4,9 +4,9 @@
 #include "ReadingFile.h"
 
 int main() {
-   std::cout << "-------------------------------------------------------" << std::endl;
-   matrixDissimilarityA(matrixExamplesA(10), 10);
-   std::cout << "-------------------------------------------------------" << std::endl;
+  std::cout << "-------------------------------------------------------" << std::endl;
+  matrixDissimilarityA(matrixExamplesA(10), 10);
+  std::cout << "-------------------------------------------------------" << std::endl;
 
   std::cout.precision(8);
   std::cout << "Testando o projeto inicialmente." << std::endl;
@@ -96,5 +96,6 @@ int main() {
   }
 	
   system("pause");
+
 	return 0;
 }

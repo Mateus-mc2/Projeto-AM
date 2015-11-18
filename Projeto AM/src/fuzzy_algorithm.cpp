@@ -101,8 +101,48 @@ std::vector<int> FuzzyClustering::UpdatePrototype(const math::Matrix &fuzzy_part
   return new_prototype;
 }
 
-//math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
-//
-//}
+math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
+  // Initialization.
+  std::vector<std::vector<int>> G = this->GenerateRandomPrototypes();
+  math::Matrix U(this->delta_.rows(), this->K);
+
+  for (int i = 0; i < U.rows(); ++i) {
+    for (int k = 0; k < U.cols(); ++k) {
+      U(i, k) = this->GetMembershipDegree(G, i, k);
+    }
+  }
+
+  double J = this->GetAdequacyCriterion(U, G);
+
+  // Optimization.
+
+  for (int t = 0; t < this->T; ++t) {
+    double prev_J = J;
+
+    // Step 1: computation of the best prototypes.
+
+    for (int k = 0; k < G.size(); ++k) {
+      G[k] = this->UpdatePrototype(U, k);
+    }
+
+    // Step 2: definition of the best fuzzy partition.
+
+    for (int i = 0; i < U.rows(); ++i) {
+      for (int k = 0; k < U.cols(); ++k) {
+        U(i, k) = this->GetMembershipDegree(G, i, k);
+      }
+    }
+
+    // Analysing topping criterion.
+
+    J = this->GetAdequacyCriterion(U, G);
+
+    if (fabs(J - prev_J) <= this->eps) {
+      break;
+    }
+  }
+
+  return U;
+}
 
 }  // namespace project

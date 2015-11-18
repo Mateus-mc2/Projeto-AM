@@ -5,7 +5,7 @@
 
 int main() {
   std::cout << "-------------------------------------------------------" << std::endl;
-  matrixDissimilarityA(matrixExamplesA(10), 10);
+  matrixDissimilarity(matrixExamples());
   std::cout << "-------------------------------------------------------" << std::endl;
 
   std::cout.precision(8);

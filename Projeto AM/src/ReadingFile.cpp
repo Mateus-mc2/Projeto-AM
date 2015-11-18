@@ -1,7 +1,7 @@
 #include "ReadingFile.h"
 
 //x,x,x,x,o,o,x,o,o,positive to [1,1,1,1,0,0,1,0,0]
-std::vector<double> lineToVectorA(const std::string &line) {
+std::vector<double> lineToVector(const std::string &line) {
 	int count = 0;
 	std::vector<double> returnVector(9);
 
@@ -21,45 +21,47 @@ std::vector<double> lineToVectorA(const std::string &line) {
 }
 
 //return matrix [num. lines][9]
-math::Matrix  matrixExamplesA(const int &totalExamples) {
+math::Matrix  matrixExamples() {
 	std::string strInput;
 	int line = 0;
-	std::vector<std::vector<double>> matrixPrinc(totalExamples);
+	std::vector<std::vector<double>> matrixPrinc;
 
-	std::ifstream inf("TestFile.txt");
+	std::ifstream inf("C:/Users/Suporte/Documents/Visual Studio 2013/Projects/Projeto AM/bin/TestFile.txt");
 
 	if (!inf) {
 		std::cout << "//could not be opened for reading!\\" << std::endl;
+    system("pause");
 		exit(1);
 	}
 
 	while (getline(inf, strInput)) {
-		matrixPrinc[line] = lineToVectorA(strInput);
-		++line;
+		matrixPrinc.push_back(lineToVector(strInput));
 	}
 
 	math::Matrix C(matrixPrinc);
 	return C;
 }
 
-math::Matrix  matrixDissimilarityA(const math::Matrix &m1, const int &totalLines){
-	int auxLine = 0;
-	math::Matrix m2 = m1;//auxiliar para comparacao
-	math::Matrix result(totalLines, totalLines);
+math::SquareMatrix matrixDissimilarity(const math::Matrix &m1){
+	math::Matrix m2 = m1;  // Auxiliar para comparacao
+	math::SquareMatrix result(m1.rows());
 
-	while (auxLine < totalLines) {
-		for (int i = 0; i < totalLines; i++) {
-			for (int j = 0; j < 9; j++)	{
-				if (m2(auxLine, j) != m1(i, j)) {
-					result(auxLine, i) += 1;
+  for (int i = 0; i < result.rows(); ++i) {
+    for (int l = 0; l < result.cols(); ++l) {
+      double sum = 0.0;
+      int p = m1.cols();
+
+      for (int j = 0; j < p; ++j)	{
+				if (m1(i, j) != m2(l, j)) {
+          sum += 1.0;
 				}
 			}
-			std::cout << " " << result(auxLine, i);
-		}
 
-		std::cout << std::endl;
-		++auxLine;
+      result(i, l) = sum;
+		}
 	}
+
+  // std::cout << result.ToString() << std::endl;
 
 	return result;
 }

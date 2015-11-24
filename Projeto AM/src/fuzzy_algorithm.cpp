@@ -19,13 +19,15 @@ std::vector<std::vector<int>> FuzzyClustering::GenerateRandomPrototypes() {
 
   for (int i = 0; i < this->K; ++i) {
     std::unordered_set<int> prototype_set;
+    int j = 0;
 
-    for (int j = 0; j < this->q; ++j) {
+    while(j < this->q) {
       int element = generator() % this->delta_.rows();
 
       if (prototype_set.find(element) == prototype_set.end()) {
         prototypes[i].push_back(element);
         prototype_set.insert(element);
+        ++j;
       }        
     }
   }

@@ -3,6 +3,14 @@
 
 namespace project {
 
+int FuzzyClustering::BinomialCoefficient(const int &n, const int &k) const {
+  if (k == n || k == 0) {
+    return 1;
+  } else {
+    return this->BinomialCoefficient(n - 1, k) + this->BinomialCoefficient(n - 1, k - 1);
+  }
+}
+
 std::vector<std::vector<int>> FuzzyClustering::GenerateRandomPrototypes() {
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::default_random_engine generator(seed);
@@ -146,7 +154,7 @@ math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
 
     J = this->GetAdequacyCriterion(U, G);
 
-    if (fabs(J - prev_J) <= this->eps) {
+    if (std::abs(J - prev_J) <= this->eps) {
       break;
     }
   }
@@ -202,6 +210,44 @@ std::vector<int> FuzzyClustering::GetMedoids(
   }
 
   return medoids;
+}
+
+double FuzzyClustering::GetCorrectedRandIndex(
+    const std::vector<std::unordered_set<int>> &hard_partition_1,
+    const std::vector<std::unordered_set<int>> &hard_partition_2) {
+  int A = 0;
+  int B = 0;
+  int C = 0;
+  const int N = this->delta_.rows();  // Number of elements.
+  
+  for (int i = 0; i < hard_partition_1.size(); ++i) {
+    for (int j = 0; j < hard_partition_2.size(); ++j) {
+      int n_ij = 0;
+      
+      for (int k = 0; k < N; ++k) {
+        if (hard_partition_1[i].find(k) != hard_partition_1[i].end() &&
+            hard_partition_2[j].find(k) != hard_partition_2[j].end()) {
+          ++n_ij;
+        }
+      }
+
+      A += this->BinomialCoefficient(n_ij, 2);
+    }
+
+    int n_i = hard_partition_1[i].size();
+    const int kScalar = this->BinomialCoefficient(n_i, 2);
+
+    for (int j = 0; j < hard_partition_2.size(); ++j) {
+      int n_j = hard_partition_2[j].size();
+      B += kScalar*this->BinomialCoefficient(n_j, 2);
+      C = B;
+    }     
+  }
+
+  B /= static_cast<double>(this->BinomialCoefficient(N, 2));
+  C /= 2.0;
+
+  return (A - B) / static_cast<double>(C - B);
 }
 
 }  // namespace project

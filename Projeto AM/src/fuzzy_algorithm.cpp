@@ -1,4 +1,5 @@
 #include "fuzzy_algorithm.h"
+#include <Windows.h>
 
 namespace project {
 
@@ -17,9 +18,15 @@ std::vector<std::vector<int>> FuzzyClustering::GenerateRandomPrototypes() {
   }*/
 
   for (int i = 0; i < this->K; ++i) {
+    std::unordered_set<int> prototype_set;
+
     for (int j = 0; j < this->q; ++j) {
       int element = generator() % this->delta_.rows();
-      prototypes[i].push_back(element);
+
+      if (prototype_set.find(element) == prototype_set.end()) {
+        prototypes[i].push_back(element);
+        prototype_set.insert(element);
+      }        
     }
   }
 
@@ -132,7 +139,7 @@ math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
         U(i, k) = this->GetMembershipDegree(G, i, k);
       }
     }
-
+        
     // Analysing topping criterion.
 
     J = this->GetAdequacyCriterion(U, G);
@@ -143,6 +150,56 @@ math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
   }
 
   return U;
+}
+
+std::vector<std::unordered_set<int>> FuzzyClustering::GetHardPartition(
+    const math::Matrix &fuzzy_partition) {
+  std::vector<std::unordered_set<int>> hard_partition(fuzzy_partition.cols());
+
+  for (int i = 0; i < fuzzy_partition.rows(); ++i) {
+    int cluster_index = 0;
+    double arg_max = 0.0;
+
+    for (int j = 0; j < fuzzy_partition.cols(); ++j) {
+      if (fuzzy_partition(i, j) > arg_max) {
+        arg_max = fuzzy_partition(i, j);
+        cluster_index = j;
+      }
+    }
+
+    hard_partition[cluster_index].insert(i);
+  }
+
+  return hard_partition;
+}
+
+std::vector<int> FuzzyClustering::GetMedoids(
+    const std::vector<std::unordered_set<int>> &hard_partition) {
+  std::vector<int> medoids(hard_partition.size());
+
+  for (int i = 0; i < hard_partition.size(); ++i) {
+    int object = 0;
+    double arg_min = 0.0;
+
+    for (std::unordered_set<int>::iterator it = hard_partition[i].begin();
+         it != hard_partition[i].end();
+         ++it) {
+      double sum = 0.0;
+
+      for (int j = 0; j < this->delta_.cols(); ++j) {
+        sum += this->delta_((*it), j);
+      }
+
+      if (it == hard_partition[i].begin() || sum < arg_min) {
+        object = (*it);
+        arg_min = sum;
+      }
+    }
+
+    medoids[i] = object;
+  }
+
+  return medoids;
 }
 
 }  // namespace project

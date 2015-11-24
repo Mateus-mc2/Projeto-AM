@@ -35,6 +35,8 @@ class FuzzyClustering {
 
     // Returns the matrix U which corresponds to the fuzzy partition of this data set. 
     math::Matrix ExecuteClusteringAlgorithm();
+    std::vector<std::unordered_set<int>> GetHardPartition(const math::Matrix &fuzzy_partition);
+    std::vector<int> GetMedoids(const std::vector<std::unordered_set<int>> &hard_partition);
 };
 
 }   // namespace project

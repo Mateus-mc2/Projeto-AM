@@ -129,12 +129,12 @@ math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
     }
   }
 
-  double J = this->GetAdequacyCriterion(U, G);
+  this->adequacy_criterion_ = this->GetAdequacyCriterion(U, G);
 
   // Optimization.
 
   for (int t = 0; t < this->T; ++t) {
-    double prev_J = J;
+    double prev_J = this->adequacy_criterion_;
 
     // Step 1: computation of the best prototypes.
 
@@ -152,9 +152,9 @@ math::Matrix FuzzyClustering::ExecuteClusteringAlgorithm() {
         
     // Analysing topping criterion.
 
-    J = this->GetAdequacyCriterion(U, G);
+    this->adequacy_criterion_ = this->GetAdequacyCriterion(U, G);
 
-    if (std::abs(J - prev_J) <= this->eps) {
+    if (std::abs(this->adequacy_criterion_ - prev_J) <= this->eps) {
       break;
     }
   }
@@ -213,20 +213,20 @@ std::vector<int> FuzzyClustering::GetMedoids(
 }
 
 double FuzzyClustering::GetCorrectedRandIndex(
-    const std::vector<std::unordered_set<int>> &hard_partition_1,
-    const std::vector<std::unordered_set<int>> &hard_partition_2) {
+    const std::vector<std::unordered_set<int>> &prior_hard_partition,
+    const std::vector<std::unordered_set<int>> &posterior_hard_partition) {
   int A = 0;
   int B = 0;
   int C = 0;
   const int N = this->delta_.rows();  // Number of elements.
   
-  for (int i = 0; i < hard_partition_1.size(); ++i) {
-    for (int j = 0; j < hard_partition_2.size(); ++j) {
+  for (int i = 0; i < prior_hard_partition.size(); ++i) {
+    for (int j = 0; j < posterior_hard_partition.size(); ++j) {
       int n_ij = 0;
       
       for (int k = 0; k < N; ++k) {
-        if (hard_partition_1[i].find(k) != hard_partition_1[i].end() &&
-            hard_partition_2[j].find(k) != hard_partition_2[j].end()) {
+        if (prior_hard_partition[i].find(k) != prior_hard_partition[i].end() &&
+            posterior_hard_partition[j].find(k) != posterior_hard_partition[j].end()) {
           ++n_ij;
         }
       }
@@ -234,11 +234,11 @@ double FuzzyClustering::GetCorrectedRandIndex(
       A += this->BinomialCoefficient(n_ij, 2);
     }
 
-    int n_i = hard_partition_1[i].size();
+    int n_i = prior_hard_partition[i].size();
     const int kScalar = this->BinomialCoefficient(n_i, 2);
 
-    for (int j = 0; j < hard_partition_2.size(); ++j) {
-      int n_j = hard_partition_2[j].size();
+    for (int j = 0; j < posterior_hard_partition.size(); ++j) {
+      int n_j = posterior_hard_partition[j].size();
       B += kScalar*this->BinomialCoefficient(n_j, 2);
       C = B;
     }     

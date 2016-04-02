@@ -24,17 +24,15 @@ Matrix::Matrix(const std::vector<std::vector<double>> &matrix) : precision_(this
   }
 
   // Now we initialize our matrix properly.
-  this->data_ = new double*[this->rows_];
+  this->data_ = new double[this->rows_*this->cols_];
 
   for (int i = 0; i < this->rows_; ++i) {
-    this->data_[i] = new double[this->cols_];
-
     for (int j = 0; j < this->cols_; ++j) {
       if (fabs(matrix[i][j]) < kEps) {
-        this->data_[i][j] = 0.0;
+        this->data_[i*this->cols_ + j] = 0.0;
       }
       else {
-        this->data_[i][j] = matrix[i][j];
+        this->data_[i*this->cols_ + j] = matrix[i][j];
       }
     }
     
@@ -42,13 +40,11 @@ Matrix::Matrix(const std::vector<std::vector<double>> &matrix) : precision_(this
 }
 
 Matrix::Matrix(const Matrix &M) : rows_(M.rows()), cols_(M.cols()), precision_(this->GetPrecision()) {
-  this->data_ = new double*[this->rows_];
+  this->data_ = new double[this->rows_*this->cols_];
 
   for (int i = 0; i < this->rows_; ++i) {
-    this->data_[i] = new double[this->cols_];
-
     for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] = M(i, j);
+      this->data_[i*this->cols_ + j] = M(i, j);
     }
   }
 }
@@ -58,22 +54,16 @@ Matrix::Matrix(const uint32_t &m, const uint32_t &n) : rows_(m), cols_(n), preci
     throw BadDimensionException("Matrix dimensions must be positive.");
   }
 
-  this->data_ = new double*[this->rows_];
+  this->data_ = new double[this->rows_*this->cols_];
 
   for (int i = 0; i < this->rows_; ++i) {
-    this->data_[i] = new double[this->cols_];
-
     for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] = 0;
+      this->data_[i*this->cols_ + j] = 0;
     }
   }
 }
 
 Matrix::~Matrix() {
-  for (int i = 0; i < this->rows_; ++i) {
-    delete[] this->data_[i];
-  }
-
   delete[] this->data_;
 }
 
@@ -90,26 +80,18 @@ int Matrix::GetPrecision() {
 }
 
 void Matrix::CopyFrom(const Matrix &M) {
-  if (this->rows_ != M.rows() || this->rows_ != M.cols()) {
+  if (this->rows_ != M.rows() || this->cols_ != M.cols()) {
     // Must resize the matrix, causing reallocation.
-    for (int i = 0; i < this->rows_; ++i) {
-      delete[] this->data_[i];
-    }
-
     delete[] this->data_;
 
     this->rows_ = M.rows();
     this->cols_ = M.cols();
-    this->data_ = new double*[this->rows_];
-
-    for (int i = 0; i < this->rows_; ++i) {
-      this->data_[i] = new double[this->cols_];
-    }
+    this->data_ = new double[this->rows_*this->cols_];
   }
 
   for (int i = 0; i < this->rows_; ++i) {
     for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] = M(i, j);
+      this->data_[i*this->cols_ + j] = M(i, j);
     }
   }
 }
@@ -151,9 +133,14 @@ Matrix Matrix::Multiply(const Matrix &A, const Matrix &B) {
 }
 
 void Matrix::SwapRows(const uint32_t i, const uint32_t j) {
-  double* aux = this->data_[i];
-  this->data_[i] = this->data_[j];
-  this->data_[j] = aux;
+  int line1 = i*this->cols_;
+  int line2 = j*this->cols_;
+
+  for (int k = 0; k < this->cols_; ++k) {
+    double aux = this->data_[line1 + k];
+    this->data_[line1 + k] = this->data_[line2 + k];
+    this->data_[line2 + k] = aux;
+  }
 }
 
 void Matrix::ApplyForwardElimination(Matrix *U, int *num_permutations) {
@@ -248,7 +235,7 @@ bool Matrix::operator==(const Matrix &M) const {
 
     for (int i = 0; i < this->rows_; ++i) {
       for (int j = 0; j < this->cols_; ++j) {
-        if (this->data_[i][j] != M(i, j)) {
+        if (this->data_[i*this->cols_ + j] != M(i, j)) {
           return false;
         }
       }
@@ -275,7 +262,7 @@ Matrix& Matrix::operator+=(const Matrix &M) {
 
   for (int i = 0; i < this->rows_; ++i) {
     for (int j = 0; j < this->cols_; ++j) {
-      this->data_[i][j] += M(i, j);
+      this->data_[i*this->cols_ + j] += M(i, j);
     }
   }
 
@@ -296,7 +283,7 @@ Matrix& Matrix::operator*=(const Matrix &M) {
   for (int i = 0; i < result.rows(); ++i) {
     for (int j = 0; j < result.cols(); ++j) {
       for (int k = 0; k < this->cols_; ++k) {
-        result(i, j) = this->data_[i][k] + M(k, j);
+        result(i, j) = this->data_[i*this->cols_ + k] + M(k, j);
       }
     }
   }
@@ -337,7 +324,7 @@ double& Matrix::At(const uint32_t &i, const uint32_t &j) {
     throw BadIndexException("Index out of bounds.");
   }
 
-  return this->data_[i][j];
+  return this->data_[i*this->cols_ + j];
 }
 
 Matrix Matrix::ApplyGaussianElimination() {
@@ -357,7 +344,7 @@ std::string Matrix::ToString() const {
 
   for (int i = 0; i < this->rows_; ++i) {
     for (int j = 0; j < this->cols_; ++j) {
-      out << this->data_[i][j];
+      out << this->data_[i*this->cols_ + j];
       result += out.str() + ", ";
       out.str("");
       out.clear();

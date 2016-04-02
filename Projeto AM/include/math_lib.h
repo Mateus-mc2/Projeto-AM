@@ -41,7 +41,7 @@ class Matrix {
     uint32_t rows_;
     uint32_t cols_;
     int precision_;
-    double** data_;
+    double* data_;
 
     int GetPrecision();
     void CopyFrom(const Matrix &M);
@@ -76,7 +76,7 @@ class Matrix {
     Matrix operator-() const;
 
     inline double& operator()(const uint32_t &i, const uint32_t &j) const {
-      return this->data_[i][j];
+      return this->data_[i*this->cols_ + j];
     }
 
     double& At(const uint32_t &i, const uint32_t &j);
@@ -86,7 +86,7 @@ class Matrix {
 
     inline uint32_t rows() const { return this->rows_; }
     inline uint32_t cols() const { return this->cols_; }
-    inline double** data() const { return this->data_; }
+    inline double* data() const { return this->data_; }
 };
 
 Matrix operator*(const double &k, const Matrix &M);

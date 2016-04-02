@@ -46,7 +46,7 @@ class FuzzyClustering {
 
     // Accessors.
     inline math::Matrix fuzzy_partition() const { return this->fuzzy_partition_; }
-    inline math::SquareMatrix dataset_reader() const { return this->delta_; }
+    inline math::SquareMatrix delta() const { return this->delta_; }
     inline double adequacy_criterion() const { return this->adequacy_criterion_; }
 };
 

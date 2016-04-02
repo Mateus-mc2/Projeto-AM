@@ -12,7 +12,8 @@ int main() {
 
   for (int i = 0; i < N; ++i) {
     math::Matrix curr_partition;
-    std::cout << "Getting partition number "<< i + 1 << "..." << std::endl;
+    std::cout << std::flush;
+    std::cout << "Getting partition number "<< i + 1 << "...\r" << std::flush;
     curr_partition = clustering_obj.ExecuteClusteringAlgorithm();
 
     if (i == 0 || arg_min > clustering_obj.adequacy_criterion()) {
@@ -21,6 +22,7 @@ int main() {
     }
   }
 
+  std::cout << std::endl;
   std::vector<std::unordered_set<int>> hard_partition = clustering_obj.GetHardPartition(fuzzy_partition);
   
   std::string header = "---------------- Membership matrix for the best partition obtained obtained ----------------";
@@ -29,18 +31,18 @@ int main() {
 
   std::cout << "Sample\t";
 
-  for (int j = 0; j < fuzzy_partition.cols(); ++j) {
+  for (uint32_t j = 0; j < fuzzy_partition.cols(); ++j) {
     std::cout << "\tColumn " << j + 1 << "\t";
   }
 
   std::cout << "\tHard Partition" << std::endl;
 
-  for (int i = 0; i < fuzzy_partition.rows(); ++i) {
+  for (uint32_t i = 0; i < fuzzy_partition.rows(); ++i) {
     std::cout.width(6);
     std::cout << std::right << i + 1 << "\t\t";
     std::ostringstream str_stream;
 
-    for (int j = 0; j < fuzzy_partition.cols(); ++j) {
+    for (uint32_t j = 0; j < fuzzy_partition.cols(); ++j) {
       str_stream << "Column " << j + 1 << "\t\t";
       std::string str = str_stream.str();
 
@@ -84,11 +86,9 @@ int main() {
   }
 
   std::cout << std::endl;
-
   double rand_index = clustering_obj.GetCorrectedRandIndex(dataset_reader.prior_hard_partition(),
                                                            hard_partition);
   std::cout << "---------------\nCorrected Rand Index = " << rand_index << std::endl;
-
   system("pause");
 
 	return 0;
